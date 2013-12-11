@@ -84,7 +84,7 @@ class MatchesfashionSpider(BaseSpider):
 
     XPATH_PRODUCT_CURRENT_PRICE = './/div[@class="indicative-price"]/div[last()]/text()'
 
-    XPATH_PRODUCT_DESCRIPTION = './/div[3]/div/div[1]/div[4]/div[1]/div/div/p/text()'
+    XPATH_PRODUCT_DESCRIPTION = './/div[@class="scroll"]/p/text()'
     XPATH_PRODUCT_REFERENCE_NUMBER = './/div[@class="info"]/h3[@class="description"]/text()'
     #FIXME: Add Xpath for Keywords / Tags 
     # this usually needs to be parsed
@@ -106,7 +106,7 @@ class MatchesfashionSpider(BaseSpider):
             l.add_xpath('brand', self.XPATH_PRODUCT_BRAND)
             l.add_xpath('categories', self.XPATH_PRODUCT_CATEGORIES)
 
-            l.add_value('reference_number',sel.xpath(self.XPATH_PRODUCT_REFERENCE_NUMBER).re('\d+'))
+            l.add_value('reference_number',sel.xpath(self.XPATH_PRODUCT_REFERENCE_NUMBER).re('\((\d+)\)'))
             #l.add_xpath('sku',self.XPATH_PRODUCT_SKU)
             l.add_xpath('description', self.XPATH_PRODUCT_DESCRIPTION,
                 Join(u"\n"),
