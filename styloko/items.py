@@ -32,10 +32,10 @@ class StylokoProduct(Item):
     _constraints = [
         RequiredFields(*_essential_fields),
         IsString('brand', 'name'),
-        #IsURL('url', 'main_image_url'),
+        IsURL('url'),
         IsPrice('current_price', 'previous_price',),
-        IsList('colors','sizes'),
-        IsValidTags('tags'),
+        IsList('colors','sizes','categories'),
+        IsValidTags('keywords'),
     ]
 
     def check(self):
