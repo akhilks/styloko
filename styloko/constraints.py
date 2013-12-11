@@ -24,8 +24,8 @@ And define the constraints attribute in your item:
 
 import re
 from functools import partial
-from Styloko.utils import *
-from Styloko.exceptions import *
+from styloko.utils import *
+from styloko.exceptions import *
 
 
 class RequiredFields(object):

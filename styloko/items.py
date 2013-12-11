@@ -3,7 +3,7 @@ from scrapy.contrib.loader import XPathItemLoader
 from scrapy.contrib.loader.processor import TakeFirst, MapCompose, Join, Identity
 from scrapy.utils.misc import arg_to_iter
 from scrapy.utils.python import flatten
-from scrunchscraper.constraints import *
+from styloko.constraints import *
 import time
 import uuid
 
@@ -31,14 +31,10 @@ class StylokoProduct(Item):
 
     _constraints = [
         RequiredFields(*_essential_fields),
-        IsString('uuid', 'label', 'title', 'retailer'),
+        IsString('brand', 'name'),
         #IsURL('url', 'main_image_url'),
-        IsPrice('price', 'discounted_price',),
-        IsValidGender('gender'),
-        IsValidAgeType('age_type'),
-        IsValidSizesList('sizes'),
-        IsValidProductStatus('product_status'),
-        IsList('colors'),
+        IsPrice('current_price', 'previous_price',),
+        IsList('colors','sizes'),
         IsValidTags('tags'),
     ]
 
@@ -54,12 +50,12 @@ class StylokoProduct(Item):
     # --- mandatory ------------------------------
     brand = Field()             # brand of the product
     url = Field()               # canonical URL of the product
-    name = Field()  		# product name
+    name = Field()          # product name
     description = Field()       # product description
-    categories = Field()          # category, use comma as separator for hierarchies
+    categories = Field(output_processor=Identity())          # category, use comma as separator for hierarchies
 
     # --- optional ------------------------------
-    price = Field()             # price as dict {"value": float, "currency": currencycode}
+    current_price = Field()             # price as dict {"value": float, "currency": currencycode}
     colors = Field(output_processor=Identity())            # list of strings
     reference_number = Field()
     sizes = Field(output_processor=Identity())

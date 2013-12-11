@@ -3,11 +3,11 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request, FormRequest
 from scrapy.contrib.loader.processor import Compose, MapCompose, Join
 from scrapy import log
-from scrunchscraper.items import StylokoProduct, StylokoProductLoader
-from scrunchscraper.utils.text import *
-from scrunchscraper.utils.tags import *
-from scrunchscraper.processors.urls import absolute_url, absolute_url_value
-from scrunchscraper.processors.color import make_colors_list
+from styloko.items import StylokoProduct, StylokoProductLoader
+from styloko.utils.text import *
+from styloko.utils.tags import *
+from styloko.processors.urls import absolute_url, absolute_url_value
+from styloko.processors.color import make_colors_list
 import urlparse
 import re
 import copy
@@ -29,7 +29,7 @@ class $classname(BaseSpider):
     name = RETAILER_NAME
     allowed_domains = ['$domain']
     HOMEPAGE = 'http://www.$domain/'
-
+    ALL_DESIGNERS_PAGE = 'http://www.$domain/designers'
     DEBUG_CHECK_CONSTRAINTS = True
 
     start_urls = [
@@ -84,17 +84,14 @@ class $classname(BaseSpider):
     """
     XPATH_PRODUCT_NAME = './/span[@class="product-title"]//text()'
     XPATH_PRODUCT_BRAND = './/span[@class="product-brand"]//text()'
-    XPATH_PRODUCT_CATEGORY = './/span[@class="product-category"]//text()'
+    XPATH_PRODUCT_CATEGORIES = './/span[@class="product-category"]//text()'
     XPATH_PRODUCT_COLOR = './/span[@class="product-color"]//text()'
-    # other colors variants need to spawn a new item
-    XPATH_PRODUCT_OTHER_COLOR = './/span[@class="product-alt-color"]//text()'
 
-    XPATH_PRODUCT_URL = './/a[@class="product-url"]/@href'
-    XPATH_PRODUCT_IMAGE_URL = './/img[@class="product-image"]/@src'
-    XPATH_PRODUCT_OTHER_IMAGE_URL = './/img[@class="product-alt-image"]/@src'
 
-    XPATH_PRODUCT_PRICE = './/span[@class="product-price"]//text()'
-    XPATH_PRODUCT_PRICE_DISCOUNT = './/span[@class="product-price-discount"]//text()'
+    XPATH_PRODUCT_IMAGE_URLS = './/img[@class="product-image"]/@src'
+
+    XPATH_PRODUCT_CURRENT_PRICE = './/span[@class="product-price"]//text()'
+    XPATH_PRODUCT_PREVIOUS_PRICE = './/span[@class="product-price-discount"]//text()'
 
     XPATH_PRODUCT_DESCRIPTION = './/span[@class="product-description"]//text()'
 
@@ -106,7 +103,7 @@ class $classname(BaseSpider):
 
         for product in hxs.select(self.XPATH_PRODUCT_DETAIL):
 
-            l = ScrunchProductLoader(${classname}Product(), product)
+            l = StylokoProductLoader(${classname}Product(), product)
             l.context['response'] = response
 
             #l.add_xpath('url', self.XPATH_PRODUCT_URL, absolute_url)
@@ -114,27 +111,19 @@ class $classname(BaseSpider):
             l.add_value('url', response.url, absolute_url_value)
 
             l.add_xpath('title', self.XPATH_PRODUCT_TITLE)
-            l.add_xpath('label', self.XPATH_PRODUCT_BRAND)
-            l.add_xpath('category', self.XPATH_PRODUCT_CATEGORY,
+            l.add_xpath('brand', self.XPATH_PRODUCT_BRAND)
+            l.add_xpath('categories', self.XPATH_PRODUCT_CATEGORIES,
                 MapCompose(Join(u', '), unicode.lower))
 
             l.add_xpath('description', self.XPATH_PRODUCT_DESCRIPTION,
                 Join(u"\n"),
                 unicode.strip)
 
-            # if you can determine the target gender
-            l.add_xpath('gender', self.XPATH_PRODUCT_GENDER)
-
-            # if you can determine the target age type
-            l.add_xpath('age_type', self.XPATH_PRODUCT_AGE_TYPE)
-
-            l.add_xpath('main_image_url', self.XPATH_PRODUCT_IMAGE_URL,
-                absolute_url)
-            l.add_xpath('image_urls', self.XPATH_PRODUCT_OTHER_IMAGE_URL,
+            l.add_xpath('image_urls', self.XPATH_PRODUCT_IMAGE_URLS,
                 absolute_url)
 
-            l.add_xpath('price', self.XPATH_PRODUCT_PRICE, price_processor)
-            l.add_xpath('discounted_price', self.XPATH_PRODUCT_PRICE_DISCOUNT,
+            l.add_xpath('previous_price', self.XPATH_PRODUCT_CURRENT_PRICE price_processor)
+            l.add_xpath('current_price', self.XPATH_PRODUCT_PREVIOUS_PRICE,
                 price_processor)
 
             # remember to add other color variants as another item
@@ -146,12 +135,4 @@ class $classname(BaseSpider):
 
             item = l.load_item(check=self.DEBUG_CHECK_CONSTRAINTS)
 
-            color_variants = product.select(self.XPATH_PRODUCT_OTHER_COLOR).extract()
-
             yield item
-
-            if color_variants:
-                for color_variant in color_variants:
-                    item_variant = copy.deepcopy(item)
-                    item_variant['colors'] = [color_variant]
-                    yield item_variant

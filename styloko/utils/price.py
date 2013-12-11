@@ -108,7 +108,10 @@ def price_processor(iter_price):
     for p in iter_price:
         yield parse_price(p)
 
-
+def price_parser(iter_price):
+    for p in iter_price:
+        price = parse_price(p)
+        yield price['value']
 # ----------------------------------------------------------------------
 
 def run_tests():

@@ -1,5 +1,5 @@
 import re
-from scrunchscraper.utils.status import *
+from styloko.utils.status import *
 
 
 REGEXES_STATUS = (

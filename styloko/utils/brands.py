@@ -1,4 +1,4 @@
-from scrunchscraper.exceptions import MissingBrand
+from styloko.exceptions import MissingBrand
 
 def find_matching_brand(text_to_match, brand_list):
 
