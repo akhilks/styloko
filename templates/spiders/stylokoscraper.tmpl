@@ -21,7 +21,7 @@ RETAILER_DOMAIN = '$domain'
 RETAILER_NAME = '$name'
 RETAILER_CODE = '$name'
 
-class ${classname}Product(ScrunchProduct):
+class ${classname}Product(StylokoProduct):
     def __init__(self, *args, **kwargs):
         super(${classname}Product, self).__init__(*args, **kwargs)
         self["retailer"] = RETAILER_CODE
