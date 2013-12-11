@@ -30,7 +30,7 @@ class MatchesfashionSpider(BaseSpider):
     allowed_domains = ['matchesfashion.com']
     HOMEPAGE = 'http://www.matchesfashion.com/'
     ALL_DESIGNERS_PAGE = 'http://www.matchesfashion.com/designer/womens#indexes'
-    DEBUG_CHECK_CONSTRAINTS = False
+    DEBUG_CHECK_CONSTRAINTS = True
 
     start_urls = [
         ALL_DESIGNERS_PAGE,
@@ -74,9 +74,9 @@ class MatchesfashionSpider(BaseSpider):
 
     # --- extract product items from product details page --------------
     XPATH_PRODUCT_DETAIL = """
-        //*[@id="content"]/div[4]
+        //div[@class="product-details"]
     """
-    XPATH_PRODUCT_NAME = './/div[3]/div/div[1]/div[1]/h3/text()'
+    XPATH_PRODUCT_NAME = './/div[@class="info"]/h3[@class="description"]/text()'
     XPATH_PRODUCT_BRAND = '//h2[@class="designer"]/a/text()'
     XPATH_PRODUCT_CATEGORIES = './/span/strong/a/text()'
     #FIX ME : Add Xpath of SK
