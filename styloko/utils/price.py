@@ -66,7 +66,7 @@ def parse_price(price_string):
         '\g<thousands>\g<value>.\g<cents>', price_string)
     price_string = REGEX_PRICE_VALUE_NORMALIZE_ALT.sub(
         '\g<thousands>\g<value>.00', price_string)
-    price_string = price_string.replace(',', '.').strip()
+    price_string = price_string.replace(',', '').strip()
 
     for r, currency in REGEXES:
         m = r.search(price_string)

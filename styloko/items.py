@@ -63,7 +63,7 @@ class StylokoProduct(Item):
     previous_price = Field() 
     keywords = Field(output_processor=Identity())              # If the product has a tag associated with it - List of Strings
     images = Field(output_processor=Identity())        # URL list of all images for the product
-    
+    related_products = Field(output_processor=Identity())
 
 class StylokoProductLoader(XPathItemLoader):
 
