@@ -89,6 +89,7 @@ class NetaporterSpider(BaseSpider):
 
     XPATH_PRODUCT_DESCRIPTION = './/div[@class="tabBody2 tabContent"]//ul/li/text()'
     XPATH_PRODUCT_REFERENCE_NUMBER = '//div[@id="tab2-question"]/span[@class="product-code"]/text()'
+    XPATH_RELATED_PRODUCTS='.//div[@class="product-feature-products"]//a/@href'
     #FIXME: Add Xpath for Keywords / Tags 
 
     # this usually needs to be parsed
@@ -127,8 +128,9 @@ class NetaporterSpider(BaseSpider):
 
             
             # remember to add other color variants as another item
-            
+            rel = [urlparse.urljoin(response.url,x) for x in sel.xpath(self.XPATH_RELATED_PRODUCTS).extract()]
             l.add_xpath('sizes', self.XPATH_PRODUCT_SIZE,MapCompose(lambda x:"".join(x.split())))
+            l.add_value('related_products',rel)
 
             item = l.load_item(check=self.DEBUG_CHECK_CONSTRAINTS)
 
